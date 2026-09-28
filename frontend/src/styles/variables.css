@@ -1,0 +1,60 @@
+:root {
+  /* Fieldnote Light Theme Agricultural Color Palette */
+  --color-forest-dark: #183D2D;
+  --color-forest-hover: #112C20;
+  --color-forest-glow: rgba(24, 61, 45, 0.12);
+  --color-mint-pill: #E6F2EB;
+  --color-mint-hover: #D5E7DC;
+  --color-mint-border: #CEE4D6;
+  
+  --color-bg-page: #F4F7F4;
+  --color-bg-white: #FFFFFF;
+  --color-border-light: #E2ECE5;
+  --color-border-card: #E4ECE7;
+
+  /* Theme Backgrounds & Surfaces */
+  --bg-dark: #F4F7F4;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #FAFCFA;
+  --bg-glass: #FFFFFF;
+  --border-glass: #E2ECE5;
+  --border-glass-accent: #183D2D;
+
+  /* Primary Accent Colors */
+  --primary: #183D2D;
+  --primary-hover: #112C20;
+  --primary-glow: rgba(24, 61, 45, 0.12);
+  --secondary: #4A6354;
+  --secondary-glow: rgba(74, 99, 84, 0.1);
+  --accent-mint: #E6F2EB;
+  --accent-amber: #D97706;
+  --accent-rose: #E0533C;
+  --accent-cyan: #2A7B72;
+
+  /* Status Colors */
+  --status-active: #183D2D;
+  --status-warning: #D97706;
+  --status-danger: #E0533C;
+  --status-info: #4A6354;
+
+  /* Typography Colors */
+  --text-main: #183D2D;
+  --text-muted: #5C7064;
+  --text-subtle: #829489;
+
+  /* Typography Fonts */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Plus Jakarta Sans', ui-sans-serif, sans-serif;
+
+  /* Spacing & Borders */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+
+  /* Shadows & Effects */
+  --shadow-card: 0 4px 20px -2px rgba(24, 61, 45, 0.05);
+  --shadow-glow: 0 6px 24px rgba(24, 61, 45, 0.1);
+  --backdrop-blur: blur(12px);
+  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
