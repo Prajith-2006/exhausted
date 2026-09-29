@@ -1,0 +1,22 @@
+{
+  "0": "cotton_aphids",
+  "1": "cotton_healthy",
+  "2": "cotton_leaf_spot",
+  "3": "cotton_whiteflies",
+  "4": "potato_black_scurf",
+  "5": "potato_early_blight",
+  "6": "potato_healthy",
+  "7": "potato_late_blight",
+  "8": "rice_bacterial_blight",
+  "9": "rice_brown_spot",
+  "10": "rice_healthy",
+  "11": "rice_leaf_blast",
+  "12": "tomato_early_blight",
+  "13": "tomato_healthy",
+  "14": "tomato_late_blight",
+  "15": "tomato_leaf_curl",
+  "16": "wheat_healthy",
+  "17": "wheat_leaf_rust",
+  "18": "wheat_powdery_mildew",
+  "19": "wheat_yellow_rust"
+}

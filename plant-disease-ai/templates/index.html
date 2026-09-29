@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartAgro AI — Plant Disease & Pesticide Advisory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=3.5">
+</head>
+<body data-lang="en">
+  <!-- Background Glow Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar glass">
+      <div class="brand">
+        <div class="brand-icon">🌿</div>
+        <div>
+          <h1 class="brand-title">SmartAgro <span class="accent-text">AI</span></h1>
+          <p class="brand-sub" data-i18n="tagline">Crop Disease Diagnostic & Pesticide Recommendation System</p>
+        </div>
+      </div>
+      <div class="nav-controls">
+        {% if not is_embedded %}
+        <a href="http://localhost:3000/dashboard" class="glass-btn pill" style="text-decoration: none; color: #f3f4f6;" title="Open Fieldnote Smart Farmer Platform">
+          <span>🌾</span>
+          <span>Fieldnote Hub</span>
+        </a>
+        {% endif %}
+        <button id="langToggleBtn" class="glass-btn pill">
+          <span class="lang-icon">🌐</span>
+          <span id="currentLangText">తెలుగు</span>
+        </button>
+        <button id="encyclopediaBtn" class="glass-btn pill">
+          <span>📖</span>
+          <span data-i18n="pesticideDirectory">Pesticide Guide</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="main-content">
+      <!-- Left Column: Upload & Demo -->
+      <section class="card upload-card glass">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="uploadTitle">📸 Upload Crop Leaf Photo</h2>
+          <p class="card-subtitle" data-i18n="uploadSubtitle">Supports Rice, Wheat, Cotton, Tomato, Potato leaves</p>
+        </div>
+
+        <!-- Dropzone -->
+        <div id="dropzone" class="dropzone">
+          <input type="file" id="fileInput" accept="image/*" class="file-hidden">
+          <div class="dropzone-inner" id="dropzonePrompt">
+            <div class="upload-icon-ring">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <p class="dropzone-text" data-i18n="dragText"><strong>Click to upload</strong> or drag & drop leaf photo</p>
+            <p class="dropzone-hint">PNG, JPG, JPEG up to 10MB</p>
+          </div>
+
+          <!-- Preview Container -->
+          <div id="previewContainer" class="preview-container hidden">
+            <img id="imagePreview" src="" alt="Selected leaf preview" class="preview-img">
+            <button id="clearImageBtn" class="remove-btn" title="Remove image">✕</button>
+          </div>
+        </div>
+
+        <!-- Action Row -->
+        <div class="upload-actions">
+          <button id="cameraBtn" class="glass-btn secondary flex-1">
+            <span>📷</span>
+            <span data-i18n="useCamera">Use Camera</span>
+          </button>
+          <button id="analyzeBtn" class="glass-btn primary flex-1" disabled>
+            <span class="btn-spinner hidden" id="analyzeSpinner"></span>
+            <span id="analyzeBtnText" data-i18n="diagnoseBtn">🔍 Diagnose Disease</span>
+          </button>
+        </div>
+
+        <!-- Demo Presets Shelf -->
+        <div class="preset-shelf">
+          <p class="preset-label" data-i18n="quickTest">⚡ Quick 1-Click Test Samples:</p>
+          <div class="preset-chips">
+            <button class="chip" data-sample="rice_brown_spot">🌾 Rice Brown Spot</button>
+            <button class="chip" data-sample="wheat_yellow_rust">🌾 Wheat Yellow Rust</button>
+            <button class="chip" data-sample="cotton_whiteflies">☁️ Cotton Whiteflies</button>
+            <button class="chip" data-sample="tomato_early_blight">🍅 Tomato Early Blight</button>
+            <button class="chip" data-sample="potato_late_blight">🥔 Potato Late Blight</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Diagnostics & Recommendations -->
+      <section class="card results-card glass">
+        <div class="card-header">
+          <h2 class="card-title" data-i18n="resultsTitle">🔬 Diagnostic Advisory</h2>
+          <span id="statusBadge" class="status-badge idle" data-i18n="statusWaiting">Awaiting Leaf Scan</span>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">🍃</div>
+          <h3 data-i18n="emptyTitle">No Leaf Scanned Yet</h3>
+          <p data-i18n="emptyDesc">Select an image from your device or click a 1-click sample to run the deep learning diagnosis and receive precise chemical & organic remedies.</p>
+        </div>
+
+        <!-- Diagnostic Output Body -->
+        <div id="resultsBody" class="results-body hidden">
+          <!-- Low Confidence Warning Banner -->
+          <div id="lowConfWarning" class="alert-box warning hidden">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-content">
+              <h4 data-i18n="lowConfTitle">Low Confidence Scan (<60%)</h4>
+              <p id="lowConfDesc"></p>
+            </div>
+          </div>
+
+          <!-- Main Disease Match Header -->
+          <div class="diagnosis-hero">
+            <div class="hero-info">
+              <div class="crop-badge" id="resCropBadge">Rice</div>
+              <h3 class="disease-name" id="resDiseaseName">Brown Spot Disease</h3>
+              <p class="pathogen-meta"><span data-i18n="pathogen">Pathogen</span>: <strong id="resPathogen">Fungal</strong></p>
+              <p class="symptoms-text" id="resSymptoms"></p>
+            </div>
+            <div class="confidence-circle" id="confidenceRing">
+              <span class="confidence-val" id="resConfidence">94.5%</span>
+              <span class="confidence-lbl" data-i18n="confidence">Confidence</span>
+            </div>
+          </div>
+
+          <!-- Top-3 Prediction Probabilities -->
+          <div class="top3-section">
+            <h4 class="section-title" data-i18n="top3Title">📊 Top 3 Differential Diagnoses</h4>
+            <div id="top3List" class="top3-list"></div>
+          </div>
+
+          <!-- Agronomic Treatment Advisory Cards -->
+          <div class="advisory-grid">
+            <!-- Chemical Pesticide -->
+            <div class="advisory-card chemical">
+              <div class="advisory-icon">🧪</div>
+              <div class="advisory-details">
+                <h4 data-i18n="chemPesticide">Chemical Pesticide</h4>
+                <p class="advisory-highlight" id="resPesticide">Carbendazim 50% WP</p>
+              </div>
+            </div>
+
+            <!-- Dosage & Application -->
+            <div class="advisory-card dosage">
+              <div class="advisory-icon">💧</div>
+              <div class="advisory-details">
+                <h4 data-i18n="dosageTitle">Recommended Dosage</h4>
+                <p class="advisory-text" id="resDosage">2 grams per liter of water</p>
+              </div>
+            </div>
+
+            <!-- Safety Precautions -->
+            <div class="advisory-card precautions">
+              <div class="advisory-icon">🛡️</div>
+              <div class="advisory-details">
+                <h4 data-i18n="precautionsTitle">Application Precautions</h4>
+                <p class="advisory-text" id="resPrecaution">Avoid spraying during peak noon heat.</p>
+              </div>
+            </div>
+
+            <!-- Organic / Bio Alternative -->
+            <div class="advisory-card organic">
+              <div class="advisory-icon">🌱</div>
+              <div class="advisory-details">
+                <h4 data-i18n="organicTitle">Organic / Bio-Alternative</h4>
+                <p class="advisory-text" id="resAlternative">Neem oil spray (5ml/L)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="modal-overlay hidden">
+      <div class="modal-box glass">
+        <div class="modal-header">
+          <h3 data-i18n="capturePhoto">📷 Live Leaf Capture</h3>
+          <button id="closeCameraBtn" class="close-btn">✕</button>
+        </div>
+        <div class="camera-viewport">
+          <video id="cameraVideo" autoplay playsinline></video>
+          <canvas id="cameraCanvas" class="hidden"></canvas>
+        </div>
+        <div class="modal-footer">
+          <button id="snapPhotoBtn" class="glass-btn primary">
+            <span>📸</span> <span data-i18n="takeSnap">Capture Photo</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pesticide Knowledge Directory Modal -->
+    <div id="directoryModal" class="modal-overlay hidden">
+      <div class="modal-box glass large-modal">
+        <div class="modal-header">
+          <h3 data-i18n="directoryTitle">📚 Crop Protection & Pesticide Directory</h3>
+          <button id="closeDirectoryBtn" class="close-btn">✕</button>
+        </div>
+        <div class="directory-tabs" id="cropTabs"></div>
+        <div class="directory-content" id="directoryList"></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>🌱 <strong>SmartAgro AI</strong> &copy; 2026 — End-to-End Deep Learning Agronomic Advisory System</p>
+      <p class="footer-note">Supports English &amp; తెలుగు (Telugu) • MobileNetV2 CNN Architecture</p>
+    </footer>
+  </div>
+
+  {% if not is_embedded %}
+  <!-- AI Agronomist Chatbot Widget (Anchored directly at bottom-right in the SAME webpage) -->
+  <div id="chatbotContainer" class="chatbot-container">
+    <!-- Floating Launcher Button (In-page toggle) -->
+    <button
+      id="chatbotToggleBtn"
+      type="button"
+      class="chatbot-launcher-btn {% if chat_open %}hidden{% endif %}"
+      onclick="toggleChatbot(true)"
+      aria-label="Open AI Agronomist Chatbot"
+      title="Chat with AI Agronomist"
+      style="{% if chat_open %}display: none;{% endif %}"
+    >
+      <div class="launcher-icon-wrapper">
+        <svg class="launcher-bot-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+          <circle cx="12" cy="5" r="2"></circle>
+          <path d="M12 7v4"></path>
+          <line x1="8" y1="16" x2="8.01" y2="16"></line>
+          <line x1="16" y1="16" x2="16.01" y2="16"></line>
+        </svg>
+        <span class="online-indicator-dot"></span>
+      </div>
+      <span class="launcher-label">AI Agronomist</span>
+      <span class="launcher-pulse"></span>
+    </button>
+
+    <!-- Chatbox Window (In-page Popup Modal) -->
+    <div
+      id="chatbotBox"
+      class="chatbot-box {% if not chat_open %}hidden{% endif %}"
+      style="{% if chat_open %}display: flex;{% else %}display: none;{% endif %}"
+    >
+      <!-- Forest Green Header -->
+      <div class="chatbot-header">
+        <div class="chatbot-header-left">
+          <div class="chatbot-avatar-wrap">
+            <div class="chatbot-avatar-circle">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+                <circle cx="12" cy="5" r="2"></circle>
+                <path d="M12 7v4"></path>
+                <line x1="8" y1="16" x2="8.01" y2="16"></line>
+                <line x1="16" y1="16" x2="16.01" y2="16"></line>
+              </svg>
+              <span class="avatar-status-dot"></span>
+            </div>
+          </div>
+          <div class="chatbot-header-info">
+            <h4 class="chatbot-title" data-i18n="chatBotTitle">AI Agronomist Bot</h4>
+            <p class="chatbot-subtitle" data-i18n="chatBotSubtitle">✨ 24/7 Smart Farm Assistant</p>
+          </div>
+        </div>
+        <button id="chatbotCloseBtn" type="button" class="chatbot-close-btn" onclick="toggleChatbot(false)" aria-label="Close Chat">✕</button>
+      </div>
+
+      <!-- Warm Yellow Outbreak Banner -->
+      <div class="chatbot-banner">
+        <div class="banner-title">
+          <span class="banner-icon">🛡️</span>
+          <span class="banner-text" data-i18n="chatBannerText">Pest or Disease Outbreak?</span>
+        </div>
+        <button id="chatReportIncidentBtn" type="button" class="banner-action-btn" data-i18n="chatReportBtn">+ Report Incident</button>
+      </div>
+
+      <!-- Chat Messages Body -->
+      <div class="chatbot-messages" id="chatbotMessages">
+        <!-- Initial Bot Bubble -->
+        <div class="chat-msg bot-msg">
+          <div class="chat-bubble">
+            <p data-i18n="chatWelcome">Hello! I'm your <strong>Fieldnote AI Agronomist Assistant</strong>. How can I help you manage your fields today?</p>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="chat-quick-actions" id="chatQuickActions">
+          <button type="button" class="quick-pill-btn" data-query="Report Pest Incident">
+            <span class="pill-icon">🚨</span>
+            <span class="pill-text" data-i18n="chatAction1">Report Pest Incident</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button type="button" class="quick-pill-btn" data-query="Fall Armyworm Diagnosis">
+            <span class="pill-icon">🌾</span>
+            <span class="pill-text" data-i18n="chatAction2">Fall Armyworm Diagnosis</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button type="button" class="quick-pill-btn" data-query="Weather Crop Risk">
+            <span class="pill-icon">🌧️</span>
+            <span class="pill-text" data-i18n="chatAction3">Weather Crop Risk</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button type="button" class="quick-pill-btn" data-query="Soil Moisture Advice">
+            <span class="pill-icon">🧪</span>
+            <span class="pill-text" data-i18n="chatAction4">Soil Moisture Advice</span>
+            <span class="pill-chevron">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Chat Input Bar -->
+      <form id="chatbotForm" class="chatbot-input-bar">
+        <input
+          type="text"
+          id="chatbotInput"
+          placeholder="Ask AI or type symptoms..."
+          autocomplete="off"
+          data-i18n-placeholder="chatPlaceholder"
+        />
+        <button type="submit" id="chatbotSendBtn" class="chat-send-btn" aria-label="Send">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <script>
+    // In-page toggle handler guaranteeing instantaneous open/close in the same webpage
+    function toggleChatbot(show) {
+      var box = document.getElementById("chatbotBox");
+      var btn = document.getElementById("chatbotToggleBtn");
+      if (!box || !btn) return;
+      if (show) {
+        box.classList.remove("hidden");
+        box.style.display = "flex";
+        btn.classList.add("hidden");
+        btn.style.display = "none";
+        var inp = document.getElementById("chatbotInput");
+        if (inp) setTimeout(function() { inp.focus(); }, 120);
+      } else {
+        box.classList.add("hidden");
+        box.style.display = "none";
+        btn.classList.remove("hidden");
+        btn.style.display = "flex";
+      }
+    }
+
+    // Auto-open in-page if requested via query or hash
+    if (window.location.hash === '#chatbot' || window.location.hash === '#chat' || window.location.search.indexOf('chat=open') !== -1) {
+      setTimeout(function() { toggleChatbot(true); }, 150);
+    }
+  </script>
+  <script src="/static/js/main.js?v=3.5"></script>
+</body>
+</html>

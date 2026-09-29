@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agronomist Bot — 24/7 Smart Farm Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css?v=3.0">
+  <style>
+    /* Dedicated Chatbot Page Styles */
+    .chatbot-page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px 16px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chatbot-top-bar {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(18, 30, 24, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.86rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(24, 40, 32, 0.95);
+      border-color: var(--emerald-primary);
+      color: var(--emerald-light);
+      transform: translateX(-2px);
+    }
+
+    .chatbot-standalone-card {
+      width: 100%;
+      max-width: 480px;
+      height: 640px;
+      max-height: calc(100vh - 100px);
+      background: #ffffff;
+      border-radius: 22px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      color: #1f2937;
+    }
+
+    .chatbot-header {
+      background: #064e3b;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chatbot-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chatbot-avatar-circle {
+      width: 42px;
+      height: 42px;
+      background: #0f6249;
+      border: 1.5px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .avatar-status-dot {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border: 2px solid #064e3b;
+      border-radius: 50%;
+    }
+
+    .chatbot-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .chatbot-subtitle {
+      font-size: 0.78rem;
+      color: #a7f3d0;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .close-icon-link {
+      color: #d1fae5;
+      text-decoration: none;
+      font-size: 1.3rem;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-icon-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .chatbot-banner {
+      background: #fef3c7;
+      border-bottom: 1px solid #fde68a;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .banner-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #92400e;
+    }
+
+    .banner-action-btn {
+      background: #d97706;
+      color: #ffffff;
+      border: none;
+      border-radius: 9999px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .banner-action-btn:hover {
+      background: #b45309;
+      transform: translateY(-1px);
+    }
+
+    .chatbot-messages {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #f9fafb;
+    }
+
+    .chat-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 88%;
+      animation: fadeInMsg 0.25s ease-out;
+    }
+
+    .chat-msg.bot-msg { align-self: flex-start; }
+    .chat-msg.user-msg { align-self: flex-end; }
+
+    .bot-msg .chat-bubble {
+      background: #ffffff;
+      color: #1f2937;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px 16px 16px 4px;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    }
+
+    .bot-msg .chat-bubble p { margin: 0; }
+    .bot-msg .chat-bubble strong { color: #065f46; }
+
+    .user-msg .chat-bubble {
+      background: #064e3b;
+      color: #ffffff;
+      border-radius: 16px 16px 4px 16px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .chat-quick-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 6px;
+      width: 100%;
+    }
+
+    .quick-pill-btn {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      background: #ecfdf5;
+      border: 1.2px solid #a7f3d0;
+      border-radius: 9999px;
+      padding: 10px 16px;
+      color: #065f46;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .quick-pill-btn:hover {
+      background: #d1fae5;
+      border-color: #6ee7b7;
+      transform: translateX(4px);
+    }
+
+    .quick-pill-btn .pill-icon { margin-right: 8px; font-size: 1rem; }
+    .quick-pill-btn .pill-text { flex-grow: 1; }
+    .quick-pill-btn .pill-chevron { font-size: 1.2rem; color: #059669; margin-left: auto; }
+
+    .chatbot-input-bar {
+      padding: 14px 16px;
+      background: #ffffff;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chatbot-input-bar input {
+      flex: 1;
+      height: 44px;
+      padding: 0 18px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      color: #111827;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .chatbot-input-bar input:focus {
+      border-color: #059669;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
+    .chat-send-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #064e3b;
+      color: #ffffff;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(6, 78, 59, 0.35);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .chat-send-btn:hover {
+      background: #047857;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body data-lang="en">
+  <!-- Background Glow Accents -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+
+  <div class="chatbot-page-wrapper">
+    <!-- Top Bar Navigation -->
+    <div class="chatbot-top-bar">
+      <a href="/" class="back-btn">
+        <span>←</span> <span id="backText">Back to Crop Advisory Dashboard</span>
+      </a>
+      <button id="langToggleBtn" class="glass-btn pill" style="padding: 6px 14px; font-size: 0.85rem;">
+        <span>🌐</span> <span id="currentLangText">తెలుగు</span>
+      </button>
+    </div>
+
+    <!-- The Standalone AI Agronomist Card (Image 1) -->
+    <div class="chatbot-standalone-card">
+      <!-- Forest Green Header -->
+      <div class="chatbot-header">
+        <div class="chatbot-header-left">
+          <div class="chatbot-avatar-circle">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+              <circle cx="12" cy="5" r="2"></circle>
+              <path d="M12 7v4"></path>
+              <line x1="8" y1="16" x2="8.01" y2="16"></line>
+              <line x1="16" y1="16" x2="16.01" y2="16"></line>
+            </svg>
+            <span class="avatar-status-dot"></span>
+          </div>
+          <div>
+            <h3 class="chatbot-title" id="chatTitle">AI Agronomist Bot</h3>
+            <p class="chatbot-subtitle" id="chatSub">✨ 24/7 Smart Farm Assistant</p>
+          </div>
+        </div>
+        <a href="/" class="close-icon-link" title="Close and return to dashboard">✕</a>
+      </div>
+
+      <!-- Warm Yellow Outbreak Banner -->
+      <div class="chatbot-banner">
+        <div class="banner-title">
+          <span>🛡️</span>
+          <span id="bannerText">Pest or Disease Outbreak?</span>
+        </div>
+        <a href="/?action=upload" class="banner-action-btn" id="bannerBtn">+ Report Incident</a>
+      </div>
+
+      <!-- Chat Messages Body -->
+      <div class="chatbot-messages" id="chatbotMessages">
+        <!-- Initial Bot Greeting -->
+        <div class="chat-msg bot-msg">
+          <div class="chat-bubble">
+            <p id="welcomeMsg">Hello! I'm your <strong>Fieldnote AI Agronomist Assistant</strong>. How can I help you manage your fields today?</p>
+          </div>
+        </div>
+
+        <!-- Quick Action Buttons -->
+        <div class="chat-quick-actions" id="chatQuickActions">
+          <button class="quick-pill-btn" data-query="Report Pest Incident">
+            <span class="pill-icon">🚨</span>
+            <span class="pill-text" id="pill1">Report Pest Incident</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button class="quick-pill-btn" data-query="Fall Armyworm Diagnosis">
+            <span class="pill-icon">🌾</span>
+            <span class="pill-text" id="pill2">Fall Armyworm Diagnosis</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button class="quick-pill-btn" data-query="Weather Crop Risk">
+            <span class="pill-icon">🌧️</span>
+            <span class="pill-text" id="pill3">Weather Crop Risk</span>
+            <span class="pill-chevron">›</span>
+          </button>
+          <button class="quick-pill-btn" data-query="Soil Moisture Advice">
+            <span class="pill-icon">🧪</span>
+            <span class="pill-text" id="pill4">Soil Moisture Advice</span>
+            <span class="pill-chevron">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Bottom Chat Input Bar -->
+      <form id="chatbotForm" class="chatbot-input-bar">
+        <input
+          type="text"
+          id="chatbotInput"
+          placeholder="Ask AI or type symptoms..."
+          autocomplete="off"
+        />
+        <button type="submit" id="chatbotSendBtn" class="chat-send-btn" aria-label="Send">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let currentLang = "en";
+
+    const I18N = {
+      en: {
+        toggleBtn: "తెలుగు",
+        back: "Back to Crop Advisory Dashboard",
+        title: "AI Agronomist Bot",
+        sub: "✨ 24/7 Smart Farm Assistant",
+        banner: "Pest or Disease Outbreak?",
+        reportBtn: "+ Report Incident",
+        welcome: "Hello! I'm your <strong>Fieldnote AI Agronomist Assistant</strong>. How can I help you manage your fields today?",
+        p1: "Report Pest Incident",
+        p2: "Fall Armyworm Diagnosis",
+        p3: "Weather Crop Risk",
+        p4: "Soil Moisture Advice",
+        placeholder: "Ask AI or type symptoms..."
+      },
+      te: {
+        toggleBtn: "English",
+        back: "పంట నిర్ధారణ డ్యాష్‌బోర్డ్‌కు తిరిగి వెళ్లండి",
+        title: "AI అగ్రోనమిస్ట్ బాట్",
+        sub: "✨ 24/7 స్మార్ట్ ఫార్మ్ అసిస్టెంట్",
+        banner: "తెగులు లేదా వ్యాధి వ్యాప్తి ఉందా?",
+        reportBtn: "+ ఘటనను నివేదించండి",
+        welcome: "నమస్కారం! నేను మీ <strong>ఫీల్డ్‌నోట్ AI అగ్రోనమిస్ట్ అసిస్టెంట్‌ని</strong>. మీ పొలం నిర్వహణ మరియు పంటల సంరక్షణలో మీకు ఎలా సహాయపడగలను?",
+        p1: "తెగులు ఘటనను నివేదించండి",
+        p2: "కత్తెర పురుగు నిర్ధారణ",
+        p3: "వాతావరణ పంట ప్రమాద సూచన",
+        p4: "నేల తేమ & నీటి యాజమాన్యం",
+        placeholder: "AI ని అడగండి లేదా లక్షణాలు రాయండి..."
+      }
+    };
+
+    const langToggleBtn = document.getElementById("langToggleBtn");
+    const currentLangText = document.getElementById("currentLangText");
+    const backText = document.getElementById("backText");
+    const chatTitle = document.getElementById("chatTitle");
+    const chatSub = document.getElementById("chatSub");
+    const bannerText = document.getElementById("bannerText");
+    const bannerBtn = document.getElementById("bannerBtn");
+    const welcomeMsg = document.getElementById("welcomeMsg");
+    const pill1 = document.getElementById("pill1");
+    const pill2 = document.getElementById("pill2");
+    const pill3 = document.getElementById("pill3");
+    const pill4 = document.getElementById("pill4");
+    const chatbotInput = document.getElementById("chatbotInput");
+    const chatbotForm = document.getElementById("chatbotForm");
+    const chatbotMessages = document.getElementById("chatbotMessages");
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      const dict = I18N[lang];
+      currentLangText.textContent = dict.toggleBtn;
+      backText.textContent = dict.back;
+      chatTitle.textContent = dict.title;
+      chatSub.textContent = dict.sub;
+      bannerText.textContent = dict.banner;
+      bannerBtn.textContent = dict.reportBtn;
+      welcomeMsg.innerHTML = dict.welcome;
+      pill1.textContent = dict.p1;
+      pill2.textContent = dict.p2;
+      pill3.textContent = dict.p3;
+      pill4.textContent = dict.p4;
+      chatbotInput.placeholder = dict.placeholder;
+    }
+
+    langToggleBtn.addEventListener("click", () => {
+      applyLanguage(currentLang === "en" ? "te" : "en");
+    });
+
+    // Quick action pills click
+    document.querySelectorAll(".quick-pill-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const query = btn.getAttribute("data-query");
+        const label = btn.querySelector(".pill-text").textContent;
+        sendMessage(query, label);
+      });
+    });
+
+    // Form submit
+    chatbotForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const val = chatbotInput.value.trim();
+      if (!val) return;
+      chatbotInput.value = "";
+      sendMessage(val, val);
+    });
+
+    async function sendMessage(query, displayLabel) {
+      // User message bubble
+      const userEl = document.createElement("div");
+      userEl.className = "chat-msg user-msg";
+      userEl.innerHTML = `<div class="chat-bubble"><p>${escapeHtml(displayLabel)}</p></div>`;
+      chatbotMessages.appendChild(userEl);
+
+      // Thinking indicator
+      const thinkingEl = document.createElement("div");
+      thinkingEl.className = "chat-msg bot-msg";
+      thinkingEl.innerHTML = `<div class="chat-bubble" style="opacity:0.75;"><em>🌱 ${currentLang === 'te' ? 'విశ్లేషిస్తోంది...' : 'Consulting agronomist engine...'}</em></div>`;
+      chatbotMessages.appendChild(thinkingEl);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: query, lang: currentLang })
+        });
+        const data = await res.json();
+        thinkingEl.remove();
+
+        const botEl = document.createElement("div");
+        botEl.className = "chat-msg bot-msg";
+        let formatted = escapeHtml(data.reply)
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/\n• /g, "<br>• ")
+          .replace(/\n/g, "<br>");
+
+        botEl.innerHTML = `<div class="chat-bubble"><p>${formatted}</p></div>`;
+        chatbotMessages.appendChild(botEl);
+
+        if (data.action === "trigger_upload") {
+          setTimeout(() => {
+            window.location.href = "/?action=upload";
+          }, 800);
+        }
+      } catch (err) {
+        thinkingEl.remove();
+        const errEl = document.createElement("div");
+        errEl.className = "chat-msg bot-msg";
+        errEl.innerHTML = `<div class="chat-bubble"><p>${currentLang === 'te' ? 'క్షమించండి, సర్వర్ స్పందించడం లేదు.' : 'Sorry, I could not connect to the server.'}</p></div>`;
+        chatbotMessages.appendChild(errEl);
+      }
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return (str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    chatbotInput.focus();
+  </script>
+</body>
+</html>

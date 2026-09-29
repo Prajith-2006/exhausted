@@ -30,3 +30,11 @@ logs/
 ehthumbs.db
 Thumbs.db
 __MACOSX/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+

@@ -1,0 +1,46 @@
+{
+  "epochs": 2,
+  "batch_size": 32,
+  "best_val_accuracy": 48.64,
+  "test_accuracy": 45.0,
+  "classes": [
+    "cotton_aphids",
+    "cotton_healthy",
+    "cotton_leaf_spot",
+    "cotton_whiteflies",
+    "potato_black_scurf",
+    "potato_early_blight",
+    "potato_healthy",
+    "potato_late_blight",
+    "rice_bacterial_blight",
+    "rice_brown_spot",
+    "rice_healthy",
+    "rice_leaf_blast",
+    "tomato_early_blight",
+    "tomato_healthy",
+    "tomato_late_blight",
+    "tomato_leaf_curl",
+    "wheat_healthy",
+    "wheat_leaf_rust",
+    "wheat_powdery_mildew",
+    "wheat_yellow_rust"
+  ],
+  "history": {
+    "train_loss": [
+      2.4257,
+      1.524
+    ],
+    "train_acc": [
+      18.48,
+      41.33
+    ],
+    "val_loss": [
+      4.5206,
+      1.1761
+    ],
+    "val_acc": [
+      5.0,
+      48.64
+    ]
+  }
+}
