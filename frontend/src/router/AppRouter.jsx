@@ -15,6 +15,7 @@ import Alerts from '../pages/Alerts';
 import Reports from '../pages/Reports';
 import Settings from '../pages/Settings';
 import FieldDashboard from '../pages/FieldDashboard';
+import DiseaseDiagnosis from '../pages/DiseaseDiagnosis';
 import { LoadingSpinner } from '../components/EmptyState';
 
 function ProtectedRoute({ children }) {
@@ -49,6 +50,7 @@ export default function AppRouter() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/farms" element={<Farms />} />
         <Route path="/crops" element={<Crops />} />
+        <Route path="/disease-ai" element={<DiseaseDiagnosis />} />
         <Route path="/weather" element={<Weather />} />
         <Route path="/sensors" element={<Sensors />} />
         <Route path="/pests" element={<PestHistory />} />

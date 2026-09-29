@@ -24,6 +24,7 @@ export default function Sidebar() {
     { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
     { path: '/farms', label: 'Farms & fields', icon: Home },
     { path: '/crops', label: 'Crops', icon: Wheat },
+    { path: '/disease-ai', label: 'Disease Diagnosis', icon: Bug },
     { path: '/weather', label: 'Weather', icon: CloudSun },
     { path: '/recommendations', label: 'Recommendations', icon: Sparkles },
     { path: '/settings', label: 'Settings', icon: Settings }

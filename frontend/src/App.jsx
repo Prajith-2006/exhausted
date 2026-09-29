@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { FarmProvider } from './context/FarmContext';
 import AppRouter from './router/AppRouter';
+import ChatBot from './components/ChatBot';
 
 export default function App() {
   return (
@@ -10,6 +11,7 @@ export default function App() {
       <AuthProvider>
         <FarmProvider>
           <AppRouter />
+          <ChatBot />
         </FarmProvider>
       </AuthProvider>
     </BrowserRouter>

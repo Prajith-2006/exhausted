@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
-import ChatBot from '../components/ChatBot';
 import { Outlet } from 'react-router-dom';
 
 export default function MainLayout() {
@@ -14,8 +13,6 @@ export default function MainLayout() {
           <Outlet />
         </main>
       </div>
-      {/* Floating AI Chat Bot in Right Side Down Corner */}
-      <ChatBot />
     </div>
   );
 }

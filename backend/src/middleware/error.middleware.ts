@@ -19,7 +19,7 @@ export const errorHandler = (
 
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
-  res.on('finish', () => {
+  res.on('f inish', () => {
     const duration = Date.now() - start;
     console.log(`[HTTP] ${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
   });
